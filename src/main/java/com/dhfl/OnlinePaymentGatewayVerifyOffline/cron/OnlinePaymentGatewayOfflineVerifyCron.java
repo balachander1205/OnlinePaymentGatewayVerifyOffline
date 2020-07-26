@@ -54,7 +54,7 @@ public class OnlinePaymentGatewayOfflineVerifyCron {
 						responseObj.put("loanCode", loanCode);
 						String clnt_rqst_meta = "{itc:"+loanCode+"}{mob:"+mobileNumber+"}{custname:"+custName+"}";
 						responseObj.put("clnt_rqst_meta", clnt_rqst_meta);
-						getTxnData(message, responseObj);
+						getTxnData(message, responseObj, fmtDate);
 					}catch (Exception e) {
 						logger.debug("Exception while offline verification="+e);
 					}
@@ -66,7 +66,7 @@ public class OnlinePaymentGatewayOfflineVerifyCron {
 		LOG.info("Average value is 0::--->>"+count++);
 	}
 	
-	public int getTxnData(String message, JSONObject responseObj) {
+	public int getTxnData(String message, JSONObject responseObj, String fmtDate) {
 		try {
 			String dataArr[] = message.split("\\|");			
 			for(String val : dataArr) {
@@ -86,8 +86,10 @@ public class OnlinePaymentGatewayOfflineVerifyCron {
 			String clnt_txn_ref = responseObj.getString("clnt_txn_ref")!=null? responseObj.getString("clnt_txn_ref"):"";
 			String tpsl_bank_cd = responseObj.getString("tpsl_bank_cd")!=null? responseObj.getString("tpsl_bank_cd"):"";
 			String tpsl_txn_id = responseObj.getString("tpsl_txn_id")!=null? responseObj.getString("tpsl_txn_id"):"";
-			String txn_amt = responseObj.getString("txn_amt")!=null? responseObj.getString("txn_amt"):"";
-			String tpsl_txn_time = responseObj.getString("tpsl_txn_time")!=null? responseObj.getString("tpsl_txn_time"):"";
+			String txn_amt = responseObj.getString("txn_amt")!=null || responseObj.getString("txn_amt")=="NA"? responseObj.getString("txn_amt"):"0.00";
+			String tpsl_txn_time = responseObj.getString("tpsl_txn_time") != null
+					|| responseObj.getString("tpsl_txn_time") == "NA" ? responseObj.getString("tpsl_txn_time")
+							: fmtDate;
 			String bal_amt = responseObj.getString("bal_amt")!=null? responseObj.getString("bal_amt"):"";
 			String rqst_token = responseObj.getString("rqst_token")!=null? responseObj.getString("rqst_token"):"";
 			String clnt_rqst_meta = responseObj.getString("clnt_rqst_meta")!=null? responseObj.getString("clnt_rqst_meta"):"";
